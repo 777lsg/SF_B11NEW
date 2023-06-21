@@ -1,0 +1,22 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+
+
+  script:
+    - docker run -d -p 9889:80 --name my-nginx nginx:latest
+    - sleep 5
+    - cp $CI_PROJECT_DIR/index.html /tmp/index.html
+    - docker cp $CI_PROJECT_DIR/index.html my-nginx:/usr/share/nginx/html/index.html  
+    - chmod +x $CI_PROJECT_DIR/shell01.sh
+    - $CI_PROJECT_DIR/shell01.sh
+    - python3 $CI_PROJECT_DIR/script001.py
+   
+
+  after_script:
+    - docker stop my-nginx
+    - docker rm my-nginx
+    - rm /tmp/index.html
+
